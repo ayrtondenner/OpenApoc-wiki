@@ -50,6 +50,13 @@ Developer-focused documentation for contributing to OpenApoc.
 - [Data Formats](development/data-formats.md) — XML data format reference
 - [Coding Style](development/coding-style.md) — Code style guide and conventions
 
+### Research (`research/`)
+
+Documentation of the AI-assisted research process that produced this wiki.
+
+- [Research Statistics](research/research-stats.md) — Metrics and scale of the documentation overhaul
+- [Discord Mining Summary](research/mining-summary.md) — 20 critical findings extracted from 77,612 Discord messages
+
 ### Resources (`resources/`)
 
 - [Links](resources/links.md) — External references, community links, useful URLs
