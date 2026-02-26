@@ -56,6 +56,8 @@ Documentation of the AI-assisted research process that produced this wiki.
 
 - [Research Statistics](research/research-stats.md) — Metrics and scale of the documentation overhaul
 - [Discord Mining Summary](research/mining-summary.md) — 20 critical findings extracted from 77,612 Discord messages
+- [State of OpenApoc 2026](research/state-of-openapoc-2026.md) — Comprehensive project status assessment
+- [Future Works](research/future-works.md) — Checklist of actionable next steps
 
 ### Resources (`resources/`)
 
