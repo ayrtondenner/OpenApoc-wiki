@@ -185,6 +185,68 @@ See the [OpenApoc GitHub repository](https://github.com/OpenApoc/OpenApoc) for t
 
 ---
 
+## Community Research Findings
+
+The following insights come from the OpenApoc Discord community and provide additional context on the project's technical challenges, development status, and future direction.
+
+### The TPS/FPS Inconsistency (Issue #997)
+
+Issue [#997](https://github.com/OpenApoc/OpenApoc/issues/997) is widely considered **the single biggest open technical issue** in OpenApoc. The problem stems from inconsistent assumptions about ticks-per-second (TPS) across the codebase:
+
+- The original game (OG) uses a consistent **36 TPS** for all game logic.
+- OpenApoc's codebase mixes assumptions of **36, 60, and 144 TPS** in different subsystems. According to community discussion, a developer wrote approximately half the code assuming a 144hz monitor refresh rate as the tick rate.
+
+This inconsistency affects a wide range of gameplay systems:
+
+- Weapon fire rates (many weapons fire too fast or too slow).
+- Explosion radii (area-of-effect calculations are off).
+- Movement speeds (unit and vehicle speeds are incorrect relative to OG).
+- Damage calculations and armour resistance checks.
+- Agent training rates (agents train at extremely accelerated rates).
+
+The community consensus (source: JonnyH, skin36) is to fix this **incrementally, one system at a time**, rather than attempting a codebase-wide refactor. Each fix must be carefully validated against OG behavior.
+
+### StateRef/StateObject Rework
+
+JonnyH (lead developer) has been working on a **major `StateRef<>` rework** as of 2025. The `StateRef`/`StateObject` system is the root cause of all "Missing Object" errors that players encounter, typically manifesting as crashes or save corruption.
+
+JonnyH has stated on Discord that if the project were starting from scratch today, they would use an **Entity Component System (ECS)** architecture instead of the current `StateRef<>`/`StateObject` pattern. The current system involves complex shared ownership semantics that make it difficult to reason about object lifetimes.
+
+### String System Rework (PR #1567)
+
+PR [#1567](https://github.com/OpenApoc/OpenApoc/pull/1567) implements a significant translation and string formatting overhaul. This is a large change that may break some existing mods that rely on the previous string format behavior. Modders should be aware that string handling conventions may change when this is merged.
+
+### Features Still Not Implemented
+
+Beyond the items tracked in the milestone issues, the community has identified these notable missing features:
+
+- **Learning AI**: The OG's advertised adaptive AI was non-functional, and OpenApoc has not yet attempted a working implementation.
+- **Procedural alien dimension maps**: The alien dimension currently uses static maps rather than procedurally generated ones.
+- **Dedicated map editor**: No standalone map editor exists; map creation requires manual data editing.
+- **Action music mixer**: The dynamic music system that blended combat and ambient tracks in the OG is not yet implemented (tracked in [#618](https://github.com/OpenApoc/OpenApoc/issues/618)).
+- **Multi-tile unit pathfinding**: Large units that span multiple tiles have pathfinding issues in tactical combat.
+- **Loss/victory screen**: End-game screens are not yet implemented.
+- **Map randomizer**: No system for randomizing tactical maps between missions.
+
+### Project Status (2024-2025)
+
+As summarized by community members: OpenApoc is **"absolutely playable and finishable"** but remains in Alpha. Notable caveats:
+
+- Funding mechanics and alien dimension access currently require the use of cheats to bypass incomplete systems.
+- Many numerical values (fire rates, damage, explosion radii) are off compared to the OG due to the TPS issue.
+- Save/load stability has improved significantly but "Missing Object" errors still occur in some scenarios.
+
+### Clean Room Development Policy
+
+OpenApoc follows a strict **clean room** development policy to avoid legal issues with Take-Two Interactive (which holds rights to X-COM: Apocalypse). The approach is approximately:
+
+- **90% observation**: Documenting OG behavior by playing the game and recording results.
+- **10% reverse-engineering**: Limited analysis of binary data formats for extraction purposes.
+
+The project **cannot convert original game code verbatim**. All game logic must be independently reimplemented based on observed behavior, not decompiled source. This is a fundamental legal constraint that affects development velocity.
+
+---
+
 Sources:
 - [Issue #263 - Alpha State](https://github.com/OpenApoc/OpenApoc/issues/263)
 - [Issue #264 - Beta State](https://github.com/OpenApoc/OpenApoc/issues/264)

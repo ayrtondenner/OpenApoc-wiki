@@ -177,6 +177,82 @@ the strategic landscape:
 These inter-organization dynamics mean that the player cannot simply maximize relations with
 everyone. Strategic choices about which organizations to prioritize are necessary.
 
+## Community Research
+
+The following information has been gathered from OpenApoc Discord community research,
+including reverse engineering of the original executable and extensive playtesting.
+
+### Organization Relations Internal Mechanics
+
+According to reverse engineering by community contributor skin36, the organization relations
+system is more complex internally than the single displayed value suggests:
+
+- Each organization pair has **4 relationship values**: short-term and long-term, in both
+  directions (A->B and B->A).
+- Relationship changes are processed through a `calc_relation()` function that applies either
+  **-5 or -15** to the relevant values depending on the severity of the action.
+- **Short-term values are updated at midnight** each game day, decaying toward a baseline.
+- Save game files contain **three copies** of the relationship data (likely for redundancy or
+  as a vestige of debugging).
+
+### "Enemy of My Enemy" Mechanic
+
+According to community testing on Novice difficulty, the commonly cited "enemy of my enemy is
+my friend" mechanic **may not work as described** in the UFOpaedia. Attacking Organization A
+did not make Organization B friendlier, despite the organizations being rivals. This needs
+further testing at other difficulty levels to confirm whether it is universally broken or
+difficulty-dependent.
+
+### Alliance System (Cut Feature)
+
+Community research has uncovered a cut alliance system in the original game code:
+
+- An organization would offer a formal alliance if **both** of the following conditions were
+  met:
+  - Relationship with X-COM was **friendly (>25)**.
+  - The organization shared **2 or more common enemies** with X-COM.
+- A **commander-rank boss** from the organization would physically come to an X-COM base to
+  offer the alliance.
+- This system was cut before release but code remnants remain in the executable.
+
+### Transport Vehicle Generation Formula
+
+From the original disassembly (skin36), civilian transport vehicle generation follows an
+**hourly distribution** that controls the maximum number of new vehicles spawned per hour:
+
+```
+Hour:  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+Max:   4  2  2  2  2  2  4  8 12  8  6  4 10  8  6  4  4 12 12  8  4  4  4  4
+```
+
+This creates a realistic traffic pattern with peaks during commuting hours (08:00, 12:00,
+17:00-18:00) and low traffic during nighttime hours.
+
+### Market Economy Details
+
+According to community testing:
+
+- **Buy and sell prices are not separate** -- there is a single price for each item that
+  applies to both buying and selling.
+- **Flooding the market** with manufactured goods **crashes the price** for that item. Selling
+  large quantities of the same item rapidly devalues it.
+- The **Psiclone** (psi-detection device) was a popular early-game money-maker, netting
+  approximately **$4,500 per unit** until market saturation drives the price down.
+
+### Government Funding Details
+
+Community research has confirmed:
+
+- If the government (Senate) becomes **hostile to X-COM**, funding drops to **zero**.
+- Government funding also **decreases proportionally** with a negative weekly score,
+  independent of the relationship level.
+
+### Gravball League and Recruitment
+
+According to community testing, the **Gravball League** affects agent recruitment indirectly
+through its influence on civilian organization happiness. Positive Gravball League relations
+can improve the pool of available recruits.
+
 ## Sources
 
 - [Organizations (Apocalypse) - UFOpaedia](https://www.ufopaedia.org/index.php?title=Organizations_(Apocalypse))

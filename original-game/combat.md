@@ -138,6 +138,111 @@ Armor provides directional protection (front, sides, back, top, bottom), with th
 typically offering the highest armor value. Damage that exceeds the armor value for the hit
 location passes through to the agent's health.
 
+## Community Research
+
+The following information has been gathered from OpenApoc Discord community research,
+primarily through reverse engineering of the original game's executables.
+
+### Accuracy Formula (Reverse-Engineered)
+
+Confirmed by community contributor skin36 through disassembly of the original executable, the
+accuracy system uses the root sum of squares (RSS) of multiple inaccuracy terms:
+
+```
+total_inaccuracy = sqrt(agent_inaccuracy^2 + weapon_inaccuracy^2 + health_penalty^2
+                        + wound_penalty^2 + berserk_penalty^2 + cloak_penalty^2)
+```
+
+Key details:
+- "Accuracy" in the OG is actually a **deviation** value (higher = less accurate).
+- The formula uses logarithms internally.
+- An inaccuracy value of 98 or higher results in an empty accuracy bar in the UI.
+
+### Dual-Wield Accuracy Penalty
+
+According to community reverse engineering (skin36), holding two weapons incurs an accuracy
+penalty based on weapon size:
+
+- If either held item exceeds 2x2 inventory size, a **1.4x inaccuracy multiplier** is applied.
+- Weapons of 1x2 size or smaller have **no dual-wield penalty**.
+- From the disassembly: `if (calc_size(a1)) accuracy = 140 * accuracy / 100;`
+
+### Target Size Bonus
+
+Targets with a size value over 4 (multi-tile aliens such as Megaspawn) grant a **140% accuracy
+bonus** to the attacker. This makes large aliens significantly easier to hit than their
+single-tile counterparts.
+
+### Fire Mode Accuracy Effects
+
+Each weapon fire mode applies an accuracy modifier:
+
+- **Auto-fire**: Applies an accuracy **penalty** (increased inaccuracy).
+- **Snap shot**: Uses the **default** accuracy with no modifier.
+- **Aimed shot**: Applies an accuracy **bonus** (decreased inaccuracy).
+
+### Prone Accuracy Effects
+
+Going prone (lying down) provides two benefits:
+
+- **Improved accuracy**: The agent's own inaccuracy is reduced while prone.
+- **Harder to hit**: The agent presents a smaller target profile, reducing enemy accuracy
+  against them.
+
+### Fire Rate Formula (Reverse-Engineered)
+
+From the original disassembly (skin36), the fire rate between consecutive shots is calculated
+as:
+
+```
+fire_rate = random(fire_delay) + fire_delay / 2
+```
+
+This value is recalculated before each individual shot, meaning there is inherent randomness
+in the interval between shots even with the same weapon.
+
+### OG Tick Rate
+
+The original game runs at **36 ticks per second** at normal speed. All timing-dependent
+mechanics (movement, fire rate, psi drain) are based on this tick rate.
+
+### Personal Disruptor Shield Details (Community Research)
+
+Additional shield interaction details confirmed through testing:
+
+- **Projectile weapons (AP/kinetic) bypass shields entirely** -- only energy-based weapons
+  are blocked.
+- **Energy weapons** (laser, plasma, disruptor) are absorbed by the shield normally.
+- Shields **do not protect against** toxins or sword/melee attacks.
+- Shields **do protect against** explosions, but **not against environmental fire** (burning
+  tiles).
+
+### Reaction Fire Details (TB Mode)
+
+According to community testing, reaction fire in turn-based mode has a **25% TU cap** -- an
+agent cannot spend more than 25% of their total TUs on reaction fire during the enemy turn.
+This limits the effectiveness of reaction fire even for agents with high Reactions stats.
+
+Additionally, Security Station turrets are limited to 25 TU on the first end-turn and **never
+replenish** their TUs afterward, rendering them effectively useless in TB mode (see
+[known-bugs.md](known-bugs.md)).
+
+### Weapon Jamming (Cut Feature)
+
+According to community research, weapon jamming was a **cut feature** in the original game.
+Code remnants suggest that weapons could jam, misfire, or even explode and harm the user.
+This mechanic was removed before release but traces remain in the executable.
+
+### Grenade Damage Discrepancies
+
+Community testing has revealed discrepancies between the original game's actual grenade damage
+values and those currently used in OpenApoc:
+
+- **AP Grenade**: OG damage = **48** (OpenApoc incorrectly uses 56).
+- **HE Grenade**: OG damage = **90** (OpenApoc incorrectly uses 120).
+
+These values should be verified and corrected in OpenApoc's data files.
+
 ## Sources
 
 - [Apocalypse - UFOpaedia](https://www.ufopaedia.org/index.php?title=Apocalypse)

@@ -77,6 +77,28 @@ OpenApoc addresses numerous crash conditions that existed in the original game o
 - **Unit facing**: Corrected cases where units would face incorrect directions after completing certain actions.
 - **Equipment screen**: Fixed display issues when agents carried items of unusual sizes.
 
+## Discord-Mined Bug Fixes
+
+The following additional bug fixes have been identified through OpenApoc Discord community discussion. These address either OG bugs that OpenApoc has corrected or OpenApoc-specific issues that have been resolved.
+
+### Prone Brainsucker Immunity (OG Bug Fixed)
+
+In the original game, agents lying in the **prone position** were completely immune to brainsucker attacks. This was an unintended exploit -- players could order all agents to go prone to trivialise any encounter involving brainsuckers. OpenApoc has fixed this bug: brainsuckers can now successfully attack prone agents, making brainsucker encounters a genuine tactical threat regardless of agent stance.
+
+### Stun Raiding Economy Exploit
+
+The OG allowed players to exploit the stun mechanic for economic gain by repeatedly stunning and raiding organisation personnel without meaningful diplomatic consequences. OpenApoc addresses this via the **"Stunning hurts relationships"** mod option (`OpenApoc.Mod.StunHostileAction`). When enabled, stunning units belonging to an organisation damages X-COM's relationship with that organisation, closing the exploit loop.
+
+### Weekly Loop Timing Fix
+
+The weekly game loop (which triggers funding assessments, economy updates, and UFO growth) was running on **Tuesday** instead of **Monday** as in the OG. This was identified and fixed by contributor Ankor, aligning the weekly cycle with the original game's timing.
+
+### Turn-Based Turret Awareness (Known OG Bug)
+
+In the OG's turn-based mode, Security Station turrets only functioned for the **first 25 TU** of the end-turn phase. After expending those initial Time Units, turrets would become inert for the remainder of the battle. This is a known OG bug that is partially addressed in OpenApoc (see also the [Security Station Turret TU Bug](#security-station-turret-tu-bug) section above).
+
+---
+
 ## Reporting New Bugs
 
 If you encounter a bug in OpenApoc, please report it on the [GitHub issue tracker](https://github.com/OpenApoc/OpenApoc/issues). Include:

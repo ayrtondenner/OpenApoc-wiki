@@ -139,6 +139,36 @@ The dynamic difficulty system means that:
    difficulty setting can feel very different in the late game depending on how the player
    performed throughout.
 
+## Community Research
+
+The following information has been gathered from OpenApoc Discord community research and
+developer commentary.
+
+### RT vs TB Design Intent
+
+According to statements attributed to the original development team, X-COM: Apocalypse was
+**primarily designed for real-time combat**. Turn-based mode was reportedly "wedged in quite
+late to placate the existing X-COM fan base" who expected traditional turn-based gameplay.
+
+This design history explains several observed balance issues:
+
+- Real-time mode generally feels more polished and balanced.
+- Turn-based mode has several bugs that suggest less thorough testing (see below).
+- Some mechanics (continuous psi drain, auto-fire dominance) work more naturally in real-time.
+
+### Turn-Based Mode Specific Issues
+
+Community testing has confirmed two significant TB-specific balance problems:
+
+- **Security Station turret bug**: As documented in [known-bugs.md](known-bugs.md), Security
+  Station turrets receive only **25 TU on the first end-turn** and **never replenish** their
+  TUs afterward. This makes base defense turrets effectively useless in TB mode after the
+  first alien turn.
+- **Brainsucker hatching timing**: In TB mode, Brainsuckers **do not instantly hatch** from
+  their pods. There is a delay that gives the player more time to react compared to real-time
+  mode, where hatching and leaping can happen nearly simultaneously. This makes Brainsuckers
+  somewhat less threatening in TB mode.
+
 ## Sources
 
 - [Score (Apocalypse) - UFOpaedia](https://www.ufopaedia.org/index.php?title=Score_(Apocalypse))

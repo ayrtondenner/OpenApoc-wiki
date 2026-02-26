@@ -469,6 +469,116 @@ The base mod should generally always be enabled and listed first in the mod load
 
 ---
 
+## Community Research Findings
+
+The following sections contain additional modding knowledge gathered from the OpenApoc Discord community. These insights supplement the official documentation above and reflect practical experience from active modders and contributors.
+
+### Data File Architecture and Load Order
+
+The XML data system uses a strict layered loading architecture where order matters (source: Discord community, skin36, filmboy84):
+
+1. **Generated data** -- Extracted from the original CD ISO by the extractor tools.
+2. **`common_patch`** -- Applied on top of generated data, providing OpenApoc's baseline corrections and additions.
+3. **Difficulty-specific patch** (`difficulty0_patch` through `difficulty4_patch`) -- Overrides for the selected difficulty level.
+4. **Mod patches** -- Loaded in the order specified by `Game.Mods`.
+
+**Critical caveat**: Difficulty patches load AFTER mods in the current architecture. This means mods cannot directly override difficulty-specific values through XML alone. The workaround is to use **Lua `onload` scripts** (as demonstrated by PR #783) which execute at load time and can programmatically apply difficulty-aware changes. The base mod already uses this pattern to load difficulty patches via `onload.lua`.
+
+### The gamestate_common Archive
+
+The `gamestate_common` file is a **ZIP archive with no file extension**. This catches many new modders off guard. To inspect or edit it, either:
+
+- Open it directly with 7-Zip (which recognises the ZIP signature regardless of extension).
+- Rename it to `gamestate_common.zip` and open with any ZIP tool.
+
+The same applies to difficulty-specific archives (e.g., `difficulty0_patched`, `difficulty1_patched`, etc.).
+
+### Key XML Files Reference
+
+Beyond the table in the [Game State XML Files](#game-state-xml-files) section, these files are particularly important for modding (source: filmboy84, skin36):
+
+| File | Modding Use |
+|---|---|
+| `economy.xml` | Controls the market: item availability, base prices, stock levels, and weekly fluctuation. |
+| `equipment_sets_by_level.xml` | Defines human tech loadouts per game progression level (what equipment organisations use as the game advances). |
+| `equipment_sets_by_score.xml` | Defines alien loadouts per difficulty level. Found in the `difficulty*X*_patched` archives rather than in `common_patch`. |
+
+### The modinfo.xml System (PR #725)
+
+The mod system (introduced in PR #725) uses **additive patching**. When creating a mod, your XML files should only include the specific values you want to CHANGE. You do not need to reproduce the entire structure of the file you are patching. Unspecified fields retain their values from the previous layer.
+
+### Image and Sound Overrides via datapath
+
+A mod's `<datapath>` entry in `modinfo.xml` adds a directory to the virtual filesystem. Files placed here can override any game resource -- images, sounds, form definitions, etc. -- by mirroring the original ISO's directory structure. For example, to replace a weapon sprite, place your replacement image at the same relative path the game expects within your mod's data directory.
+
+### SerializationTool for Delta Patches
+
+The **SerializationTool** (in the `tools/` directory) can generate minimal delta patches between two game states. This is useful for creating mods that only contain the differences from a base state, rather than duplicating entire data files.
+
+### Sound Format Support
+
+OpenApoc supports the following sound formats for modding:
+
+- **Raw PCM audio**: Referenced as `RAWSOUND:samplerate:path` (e.g., `RAWSOUND:22050:sounds/myeffect.raw`).
+- **WAV**: Standard WAV files.
+- **OGG Vorbis**: Compressed audio via libvorbis.
+
+### Palette System
+
+The game uses different palette systems in different contexts:
+
+- **Cityscape**: Uses a 3-palette blend system that transitions between day, twilight, and night palettes based on the time of day.
+- **Battlescape**: Uses a static palette. A dynamic palette system was planned but ultimately cut from the implementation.
+
+Modders creating custom sprites should be aware of which palette context their assets will be used in.
+
+### Armour Stat Mapping
+
+When modding armour pieces, each armour slot maps to a specific agent stat bonus (source: Discord community):
+
+| Armour Slot | Stat Affected |
+|---|---|
+| Legs | Speed |
+| Arms | Accuracy |
+| Helmet | Reactions |
+| Chest | Bravery |
+
+### Sprite Workflow and Asset Creation
+
+Creating a single new weapon item is a significant undertaking. Community estimates (source: filmboy84) suggest approximately **12 hours of work**, of which only about 15 minutes is XML editing. The remaining time is spent on sprite creation. A complete weapon requires:
+
+- **Equip screen icon** -- The inventory sprite shown in the equipment screen.
+- **Dropped/thrown sprites** -- Sprites for the item when on the ground or in flight.
+- **Shadow sprites** -- Corresponding shadow sprites for dropped/thrown states.
+- **Handob sprites** -- The weapon as held by an agent, requiring sprites for each facing direction.
+- **UFOpaedia image** -- The full-size reference image displayed in the in-game encyclopedia.
+
+### Common Modding Pitfalls
+
+The following issues are frequently encountered by new modders (source: Discord community, filmboy84, skin36):
+
+- **CRC check errors**: If `Framework.Serialization.CRC` is enabled, manually editing `gamestate_common` or save files will invalidate the checksum. Disable CRC checking in `settings.cfg` when modding.
+- **Case sensitivity in file paths**: Some platforms (especially Linux) are case-sensitive in file path resolution. Ensure your file references match the actual case exactly.
+- **`op='delete'` deletes the WHOLE list**: The XML `op='delete'` attribute removes the entire list element, not just a single entry. There is currently no mechanism to delete individual entries from a list -- you can only replace the entire list.
+- **Duplicate objects from serialization**: When creating new objects via mods, ensure unique keys. Duplicate keys can cause the serialization system to create duplicate entries with unpredictable behavior.
+
+### Damage Type Limitations
+
+Damage types are currently **hardcoded** in the engine. There is no modding capability for defining custom damage types. The available damage types are those defined in `damage_types.xml`, but their underlying behavior (penetration logic, resistance calculations, special effects like fire or stun) is implemented in C++ code.
+
+### Extended Weapons Mod (EWM)
+
+The **Extended Weapons Mod** by filmboy84 is currently the primary test platform for OpenApoc's modding system. It serves as both a playable content mod and a stress test for mod capabilities. Features include:
+
+- Weapons ported from UFO: Enemy Unknown and Terror from the Deep.
+- New alien types and variants.
+- Over 2,000 additional agent names.
+- Various balance adjustments and fixes.
+
+The EWM is a useful reference for modders looking for real-world examples of what the mod system can accomplish and where its current limitations lie.
+
+---
+
 Sources:
 - [`framework/modinfo.h`](https://github.com/OpenApoc/OpenApoc/blob/master/framework/modinfo.h)
 - [`framework/luaframework.h`](https://github.com/OpenApoc/OpenApoc/blob/master/framework/luaframework.h)

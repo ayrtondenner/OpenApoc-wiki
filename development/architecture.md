@@ -183,6 +183,83 @@ CMake (minimum 3.30) with the Ninja generator. Key CMake options:
 External dependencies (installed separately or via vcpkg):
 - SDL2, Boost (locale, program-options, uuid, crc), Qt6, libvorbis, libunwind (Linux only).
 
+## Community Architecture Insights
+
+The following insights come from OpenApoc Discord discussions with core developers and contributors. They provide additional context on architectural decisions, known design flaws, and implementation details not captured in the code comments.
+
+### StateRef/StateObject System -- Known Design Flaw
+
+The `StateRef<T>` / `StateObject` system, while functional, is acknowledged by lead developer JonnyH as a significant architectural problem. In his words, it is **"a mess of pointers and weird shared ownership."** This system is the **root cause of all "Missing Object" errors** that players encounter -- these occur when a `StateRef` holds an ID string that no longer resolves to a valid object in `GameState`.
+
+JonnyH has stated that if starting the project from scratch today, he would use an **Entity Component System (ECS)** architecture instead. ECS would provide cleaner ownership semantics, better cache locality, and simpler serialization. However, migrating the existing codebase to ECS would be an enormous undertaking and is not planned. Instead, the current approach is an incremental `StateRef<>` rework (ongoing as of 2025) to address the worst failure modes.
+
+### State/UI Separation Constraint
+
+There is a strict architectural boundary between `game/state/` and `game/ui/`: **game state code cannot call into game UI code directly**. Attempting to do so causes linker errors because the two are compiled as separate libraries with a one-way dependency (UI depends on state, but not vice versa).
+
+This means that game logic in `game/state/` cannot trigger UI updates, display messages, or manipulate the interface. All communication from state to UI must flow through the event system or through data that the UI polls during its render/update cycle.
+
+### Serialization System
+
+The serialization system has several notable characteristics (source: JonnyH, Discord):
+
+- **Code-generated**: Serialization code is generated from `gamestate_serialize.xml` at build time. This XML file defines the mapping between C++ game state objects and their XML representations.
+- **High memory usage**: The generated serialization file requires **3GB+ of RAM** to compile. This is a known pain point for developers with limited system memory.
+- **Save game format**: Save games are ZIP archives containing XML files (using miniz for compression and pugixml for XML handling).
+
+### Game State Layered Loading
+
+The game state loading pipeline works as follows:
+
+```
+gamestate_common (base extracted data)
+    |
+    v  merge
+common_patch (OpenApoc corrections and additions)
+    |
+    v  merge
+difficulty*N*_patch (difficulty-specific overrides)
+    |
+    v  merge
+mod patches (in Game.Mods order)
+```
+
+Each layer can add new objects or override individual fields of existing objects. The merge is additive -- fields not mentioned in a patch retain their values from the previous layer.
+
+### No Initial Design Document
+
+According to community discussion, the project **had no formal design document** at its inception. JonnyH has noted that "there wasn't any design -- the initial stuff was done concurrently with people documenting the OG behavior." This organic development approach explains some of the architectural inconsistencies in the codebase, such as the mixed TPS assumptions and the `StateRef` design.
+
+### STL Container Iteration Safety
+
+A recurring source of bugs in the codebase is **modifying STL containers while iterating over them**. This pattern causes undefined behavior in C++ and has led to crashes and data corruption bugs. The established solution in OpenApoc is to:
+
+1. Iterate the container and **mark items for deletion** (e.g., using a flag or a separate list of keys to remove).
+2. After the iteration completes, perform the actual deletions.
+
+This "mark and sweep" pattern must be followed whenever game logic needs to remove items from a container during an update tick.
+
+### Voxel System
+
+The voxel collision system used for line-of-sight and projectile hit detection has the following characteristics:
+
+- **LOFTemps** (Line of Fire Templates): Operate at **32x32x32** or **64x64x64** resolution depending on the tile type.
+- **Single ray**: Hit detection casts a single ray from the firing position to the target voxel. This can produce degenerate cases where shots miss targets they visually appear to hit, or vice versa.
+- **Performance**: The voxel system is computationally expensive. GCC Profile-Guided Optimization (PGO) provides approximately a **5x speedup** for voxel-heavy operations like batch line-of-sight calculations.
+
+### Original Game Two-Executable Architecture
+
+The original X-COM: Apocalypse used a **two-executable architecture**:
+
+- **`ufop.exe`**: The cityscape executable, handling city management, vehicle combat, base management, and strategic layer.
+- **`tacp.exe`**: The battlescape (tactical) executable, handling ground combat missions.
+
+The two executables exchanged data via intermediate files on disk. When a tactical mission was initiated from the cityscape, `ufop.exe` wrote the mission parameters to disk, launched `tacp.exe`, and then read the results back when tactical combat concluded.
+
+OpenApoc unifies both game phases into a single executable, which simplifies data exchange but also means the codebase must manage both city and battle states simultaneously.
+
+---
+
 ## See Also
 
 - [Building](building.md) -- detailed build instructions for all platforms

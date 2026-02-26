@@ -150,6 +150,62 @@ Agent morale affects combat performance and can cause loss of control.
 - Managing this cap is important in the mid-to-late game when expanding operations across
   multiple bases.
 
+## Community Research
+
+The following information has been gathered from OpenApoc Discord community research,
+including reverse engineering, testing, and gameplay analysis.
+
+### Android Stat Growth Correction
+
+Contrary to the commonly stated claim that Androids cannot improve any stats, community
+testing has revealed that **Androids do gain experience**, but at a **significantly slower
+rate** than humans or hybrids. All stats can improve except Stamina. The improvement is so
+slow that it is practically negligible in a normal campaign, which is likely why it was
+originally reported as non-existent.
+
+### Training and Healing Facility Efficiency
+
+According to community research, training and healing facility utilization has a
+non-linear efficiency curve:
+
+- **80% utilization** is actually **more efficient per agent** than 100% capacity.
+- **100% utilization** is significantly better than overloading the facility.
+- **120% overwork** (exceeding capacity) causes a sharp efficiency drop and is much worse
+  than operating at or below capacity.
+- The rate of training/healing is internally tied to the **TPS (ticks per second) value**
+  with additional modifiers based on facility type and agent stats.
+
+Players should aim for approximately 80% capacity for optimal per-agent improvement rates.
+
+### Engineer Hard Cap
+
+There is a **hard cap of 50 engineers per manufacturing category** in the original game.
+Assigning more than 50 engineers to a single production line provides no additional benefit.
+This cap is per category, not per base.
+
+### Scientist Travel Mechanics
+
+According to community research, **scientists travel on foot through People Tubes** to reach
+their assigned laboratories. This has an important diplomatic consequence:
+
+- If X-COM's relationship with **Transtellar** (the People Tube operator) becomes hostile,
+  scientists may be **unable to reach the base** or experience significant travel delays.
+- This can effectively shut down research operations even if the scientists are technically
+  employed and assigned.
+
+### Commander Rank Requirements
+
+According to community testing, the **Commander rank** for agents is not simply a function of
+experience points. It requires:
+
+- A **mission count threshold** -- the agent must have participated in a minimum number of
+  missions.
+- **Diverse mission activities** -- the agent must have performed a variety of actions across
+  missions (kills, captures, recoveries, etc.), not just repeated the same activity.
+
+This means that agents who are deployed repeatedly but perform narrow roles may never reach
+Commander rank despite high mission counts.
+
 ## Sources
 
 - [Agents (Apocalypse) - UFOpaedia](https://www.ufopaedia.org/index.php?title=Agents_(Apocalypse))

@@ -301,6 +301,72 @@ OpenApoc includes an extensive debug system not present in the original game. De
 - Instantly finish all facility construction
 - Near-instantly complete research projects
 
+## Discord-Mined Differences
+
+The following differences between OpenApoc and the original game (OG) have been identified through community testing and discussion on the OpenApoc Discord. These are documented here as known discrepancies, many of which are under investigation or planned for correction.
+
+### Explosion Radius
+
+Explosion radii are **significantly larger** in OpenApoc compared to the OG (confirmed by JonnyH, Feb 2026). This is most noticeable with explosive weapons such as the Autocannon using HE, Incendiary, and Gas rounds, where the blast area is visibly much larger than intended. This is believed to be related to the TPS/FPS inconsistency ([#997](https://github.com/OpenApoc/OpenApoc/issues/997)).
+
+### TICKS_MULTIPLIER Double-Conversion Bug
+
+A systemic bug affects weapon timing values across the game. The data extractor multiplies `fire_delay` values by `TICKS_MULTIPLIER` when extracting from the OG data, but the game's `update()` function already applies this conversion at runtime. The result is that fire delay values are effectively multiplied twice, causing widespread weapon stat errors. For example:
+
+| Weapon | OG Fire Delay | OpenApoc Fire Delay |
+|---|---|---|
+| Heavy Launcher AG | 80 | 320 |
+
+This affects most weapons to varying degrees and is a major contributor to combat feeling different from the OG.
+
+### Grenade Damage Values
+
+Several grenade damage values do not match the OG (source: community testing):
+
+| Grenade | OG Damage | OpenApoc Damage |
+|---|---|---|
+| AP Grenade | 48 | 56 |
+| HE Grenade | 90 | 120 |
+
+### Advanced Security Turret Beam Type
+
+Advanced Security Turrets incorrectly use **Devastator beams** instead of the correct **Disrupter beams** as in the OG.
+
+### Burst Fire Ammo Consumption
+
+When a weapon fires in burst mode, only **one round of ammo is consumed** regardless of the number of projectiles in the burst. In the OG, each projectile in a burst correctly consumes one round.
+
+### City Tile Repair Visual Desync
+
+City tiles can appear visually repaired (the scenery looks intact) while remaining marked as destroyed in the underlying save data. This desync between the visual state and the data state can cause confusion and may lead to issues if the tile is interacted with again.
+
+### Smoke Persistence
+
+Smoke effects persist for **significantly longer** in OpenApoc than in the OG. This affects tactical combat balance, as smoke-based strategies (both offensive and defensive) have disproportionate impact.
+
+### Accuracy Precision
+
+The accuracy system in OpenApoc only supports **integer** values, but faithfully reproducing OG accuracy behavior requires sub-integer precision (values with decimal places, e.g., 0.xxx). This means some accuracy calculations are rounded in ways that do not match the OG, particularly for weapons with very high or very low base accuracy.
+
+### Stun Duration
+
+Stun effects appear to wear off **too quickly** in OpenApoc compared to the OG. Stunned units recover consciousness faster than expected, which affects the balance of stun-based weapons and tactics.
+
+### Jumping Mechanics
+
+Jumping works differently in OpenApoc compared to the OG:
+
+- **OG behavior**: Units can jump **down one tile** vertically AND **across one tile** horizontally simultaneously (a diagonal downward leap).
+- **OpenApoc behavior**: Units can only jump **straight down** one level. The horizontal component of jumping is not implemented.
+
+This affects tactical combat in maps with elevation changes, where OG players could use jumps to quickly traverse gaps or descend from elevated positions.
+
+### Brainsucker Prone Exploit
+
+In the OG, agents lying in the **prone position** could not be brainsucked -- this was an unintended exploit that trivialised brainsucker encounters. OpenApoc has **fixed this bug**, so brainsuckers can now attack prone agents. This is an intentional deviation that corrects OG behavior. See also [Bug Fixes](bug-fixes.md).
+
+---
+
 ## See Also
 
 - [OpenApoc](https://www.ufopaedia.org/index.php/OpenApoc) -- main OpenApoc page

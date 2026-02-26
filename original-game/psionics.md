@@ -143,6 +143,52 @@ Several alien species possess psionic abilities:
 When aliens use psionics against X-COM agents, the same success formula applies in reverse.
 Agents with high Psi-Defence and Bravery are more resistant to alien psionic attacks.
 
+## Community Research
+
+The following information has been gathered from OpenApoc Discord community research,
+including testing, reverse engineering, and analysis of game mechanics.
+
+### Mind Shield Permanent Stat Boost Exploit (Bug)
+
+Community testing has confirmed a significant bug with the Mind Shield item:
+
+- If an agent is **holding a Mind Shield when a mission ends**, the psi-defense bonus from the
+  shield is **permanently added** to the agent's base Psi-Defence stat.
+- This is cumulative -- completing multiple missions while holding a Mind Shield increases the
+  agent's Psi-Defence each time.
+- This is clearly unintended behavior (a bug, not a feature) and can be exploited to create
+  agents with extremely high Psi-Defence values.
+- See also [known-bugs.md](known-bugs.md).
+
+### Alien Psionic Capabilities
+
+According to community research:
+
+- The alien AI is capable of using Mind Benders if they are **edited into alien loadouts**.
+  The code path for alien psionic attacks exists and functions.
+- **Cult of Sirius** agents have **unusually high psi stats** compared to other human
+  organizations. Community research suggests they were originally intended to use Mind Benders
+  in combat, but this was cut or disabled before release.
+
+### Brainsucker Psionic "Squeal" Attack (Cut)
+
+According to community research, Brainsuckers had a **psionic "squeal" attack** that would
+cause panic in nearby agents. This attack was cut from the final game, but the associated
+**sound effect remains in the game files** and can still be heard on some maps as an ambient
+sound or leftover trigger.
+
+### Android Psi Immunity Tactical Value
+
+Community strategy discussions emphasize that Android psi immunity effectively **removes three
+major enemy threats** from any mission:
+
+1. **Brainsuckers**: Cannot implant Androids (near-zero targeting chance).
+2. **Psimorphs**: Cannot panic, stun, or mind-control Androids.
+3. **Mind control**: No enemy psionic attack of any kind affects Androids.
+
+This makes a squad of 3 Androids an effective "psi screen" that can safely engage the most
+dangerous psionic threats while human and hybrid agents provide ranged support from behind.
+
 ## Sources
 
 - [Mind Bender - UFOpaedia](https://www.ufopaedia.org/index.php?title=Mind_Bender_(Apocalypse))

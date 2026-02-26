@@ -151,6 +151,104 @@ that serve different functions:
 - The final missions of the game take place in the alien dimension, culminating in the
   destruction of the alien command structure.
 
+## Community Research
+
+The following information has been gathered from OpenApoc Discord community research,
+including reverse engineering, developer interviews, and extensive playtesting.
+
+### Neural Network AI System
+
+The original game uses a **multilayer perceptron neural network** with 6 layers to drive alien
+tactical AI. This was confirmed by Julian Gollop (original game designer) in community
+discussions.
+
+Three data files store the AI state:
+
+| File            | Purpose                                                              |
+|-----------------|----------------------------------------------------------------------|
+| BRAIN.DAT       | Neural network weights and structure for the alien decision-making model. |
+| EXPERIEN.DAT    | Accumulated experience data from observing player tactics.           |
+| WEAPEXP.DAT     | Weapon-specific experience data tracking player weapon usage patterns. |
+
+The AI evaluates **25 parameters** of player efficiency to adjust alien behavior. When
+functioning correctly, this produces noticeably different alien behavior:
+
+- Aliens **hide behind cover** and use smoke tactically.
+- Aliens **crawl** (go prone) to reduce their target profile.
+- Aliens employ **diversionary tactics** to draw agents out of position.
+- Aliens **use line-of-sight shooting** rather than blind fire.
+- Aliens **adapt to the weapon the player is currently holding**, choosing appropriate
+  counter-tactics.
+
+### Learning AI Failure Conditions
+
+According to community research, the Learning AI breaks under several conditions beyond the
+well-known save/load bug:
+
+- **Save/load**: Resets the decision matrix (the most common failure case). According to
+  community testing, this bug is not present in beta/debug versions of the executable.
+- **New game start**: Starting a new campaign can reset accumulated learning.
+- **Stun raids**: Heavy use of stun-based tactics can confuse the learning parameters.
+- **Monotonic weapon usage**: Using the same weapon type exclusively causes the AI to
+  over-specialize its counter-tactics, sometimes resulting in degraded behavior.
+- **ISO mounting vs. physical CD**: The AI data files are expected on a physical CD-ROM.
+  ISO-mounted images may not correctly provide the required file access, breaking the AI.
+
+### Infiltration Mechanics (Detailed)
+
+Community reverse engineering has revealed additional details about how alien infiltration
+works at the city level:
+
+- **UFO delivery**: UFOs drop alien units directly into buildings, accompanied by a **white
+  smoke animation** visible in the cityscape.
+- **Building-to-building spread**: Aliens spread from infiltrated buildings to **adjacent
+  buildings** over time.
+- **People Tubes and ventilation**: These infrastructure systems **accelerate infiltration
+  spread** between connected buildings.
+- **Teleporters**: Aliens can use teleporter infrastructure for **instant jumps** between
+  distant buildings, bypassing normal adjacency requirements.
+- **100% infiltration is permanent**: Once an organization reaches 100% infiltration, it
+  **cannot be reversed** by any means.
+
+### Brainsucker Additional Details
+
+Community testing and reverse engineering have uncovered further Brainsucker mechanics:
+
+- **Prone immunity is a bug** in the original game. OpenApoc has fixed this so Brainsuckers
+  can attack prone agents.
+- **Android targeting**: Brainsuckers have only a **1/256 chance** of attempting to jump at
+  Android agents. This is likely a near-zero targeting probability rather than true immunity.
+- **Wall/ceiling crawling (cut)**: Brainsuckers were originally intended to crawl on walls
+  and ceilings. Code remnants for this behavior exist in the executable but the feature was
+  disabled before release.
+
+### UFO Type 3 Research Importance
+
+According to community research, **UFO Type 3 is critical for the research tree**. Missing
+the opportunity to recover a Type 3 UFO can prevent the player from unlocking better
+spacecraft designs, creating a potential soft-lock in research progression.
+
+### Alien Extra Armor
+
+Community reverse engineering has revealed that certain alien variants have **additional armor
+values**:
+
+- **Non-human Type 2 aliens** (upgraded variants) have extra back armor beyond what is shown
+  in the UFOpaedia stats.
+- **Corporate boss aliens** (organization leaders who have been fully taken over) also receive
+  additional back armor.
+
+### Agent Recruitment Limits
+
+According to community testing, daily recruitment of agents from Mega-Primus organizations is
+limited:
+
+- **Humans**: Maximum of **3 hires per day**.
+- **Androids**: Maximum of **1 hire per day**. Requires good relations with S.E.L.F.
+  (Sentient Engine Liberation Front).
+- **Hybrids**: Maximum of **1 hire per day**. Requires good relations with the Mutant
+  Alliance.
+
 ## Sources
 
 - [Aliens (Apocalypse) - UFOpaedia](https://www.ufopaedia.org/index.php?title=Aliens_(Apocalypse))

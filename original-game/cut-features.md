@@ -143,6 +143,151 @@ Several additional agent skills were planned beyond what shipped in the final ga
 These skills would have added depth to agent specialization, encouraging players to develop
 agents for specific roles rather than general-purpose soldiers.
 
+## Community Research: Additional Cut Features
+
+The following cut features have been identified through OpenApoc Discord community research,
+including interviews with original developers, beta version analysis, and reverse engineering.
+
+### Procedural Alien Dimension
+
+According to Thaddaeus Frogley (original developer), the alien dimension was originally
+intended to be **procedurally generated**:
+
+- **Multiple alternate dimensions** were planned, connected by portals.
+- Landscapes would be **algorithmically generated**, providing unique terrain layouts for
+  each playthrough.
+- Microprose (the publisher) **killed the feature** due to quality assurance costs -- testing
+  procedurally generated content was deemed too expensive and time-consuming.
+- This is distinct from the "Expanded Alien Dimensions" section above; the procedural system
+  was a more ambitious vision that predated the fixed-layout approach.
+
+### Tracker Gun
+
+A **Tracker Gun** weapon was planned that would allow X-COM to:
+
+- **Mark aliens and infected people** with tracking devices.
+- **Monitor their movement** on the cityscape map after the mission.
+- This would have provided intelligence on alien infiltration patterns and building targets.
+
+### VIP System / Espionage Alliance Mechanic
+
+The espionage and organization leader interaction systems documented above were part of a
+larger **VIP system** that was, according to community research, "pretty close to being
+complete" before being cut:
+
+- Commander-rank sprites were created for organization leaders.
+- The alliance mechanic (documented in [city-management.md](city-management.md)) was part of
+  this system.
+- Organization leaders would physically visit X-COM bases to offer alliances.
+
+### Dimension Force Field
+
+A **placeable force field barrier** was planned as a tactical equipment item:
+
+- Could be deployed during tactical missions to block movement and projectiles.
+- Was intended to interact with **multi-tile units** (Megaspawn, Multiworms) and
+  **battlescape vehicles**.
+- Would have added a defensive/fortification dimension to tactical combat.
+
+### Sonic / Freeze Weapons
+
+**Sonic and freeze weapon types** were partially implemented:
+
+- These would have existed alongside the entropy munitions damage type.
+- Freeze weapons would presumably have immobilized or slowed targets.
+- Sonic weapons may have had area-of-effect or wall-penetrating properties.
+- Code remnants and partial data entries exist in the game files.
+
+### Wall and Ceiling Crawling
+
+**Brainsuckers and certain aliens** were intended to crawl on walls and ceilings:
+
+- This would have made Brainsuckers significantly more dangerous, as they could approach
+  from unexpected angles.
+- Other alien types may also have had this ability.
+- Code remnants for surface-crawling movement exist in the executable.
+- The feature was disabled before release, likely due to animation and pathfinding complexity.
+
+### Cult of Sirius Incendiary Weapons
+
+The **Cult of Sirius was originally intended to use incendiary weapons** in combat encounters.
+According to community research, this was **cut due to hardware limitations** -- the fire
+spread and rendering effects were too computationally expensive when combined with the Cult's
+large squad sizes on period hardware.
+
+### Alien Turrets in Control Rooms
+
+**Alien turrets** were planned for placement in alien building control rooms:
+
+- These turrets are still present in the release version's data files but are **disabled**.
+- They would have provided automated defense for key alien structures during tactical
+  missions.
+
+### Skirmish Mode
+
+A **standalone skirmish mode** existed in the Beta 1 version of the game:
+
+- Players could set up custom tactical battles outside the campaign.
+- This was cut before the final release.
+- The Scenario Generator documented above may have been related to or evolved from this mode.
+
+### Game Origin: Judge Dredd
+
+According to developer commentary uncovered by the community, X-COM: Apocalypse **started
+development as a Judge Dredd game** before being reworked into an X-COM title. This explains
+several design elements:
+
+- The single-megacity setting (Mega-Primus parallels Mega-City One).
+- The strong law-enforcement themes and organization-management mechanics.
+- The urban combat focus compared to the rural/wilderness settings of earlier X-COM games.
+
+### Elerium / Zorium Naming
+
+The alien power source material was originally going to be called **"Zorium"** rather than
+Elerium. The name was changed during development to maintain continuity with the broader
+X-COM franchise.
+
+### Biotrans Capture Mechanic
+
+The **Biotrans** vehicle was originally intended to be the **only means of capturing live
+aliens**:
+
+- The stun grenade was originally designed as a **flashbang** (temporary blinding/disorientation
+  effect) rather than a knockout weapon.
+- Live capture would have required successfully subduing aliens and then extracting them via
+  the Biotrans.
+- This was simplified in the final game to the standard stun-and-recover mechanic.
+
+### Alien Species Count
+
+Community research into development materials has revealed the scope of planned alien content:
+
+- **~30 alien types were proposed** during design.
+- Physical sculpts were created for **~20** alien species.
+- 3D models were produced for **~26** species.
+- Only **14 alien types shipped** in the final game.
+- The unshipped alien designs may have included variants of existing types or entirely new
+  species.
+
+### Real Estate System
+
+Translation strings for a **building marketing/real estate system** exist in the game files:
+
+- X-COM would have been able to **buy and sell buildings** on the open market.
+- This would have provided an alternative to raiding for acquiring strategic building
+  locations.
+
+### Higher Resolution Support
+
+The game's renderer supports **800x600 and 1024x768 resolutions** that can be enabled via
+hex-editing:
+
+- The UI renders correctly at these resolutions.
+- However, **sprite artwork for higher resolutions was cut** -- game objects and units use
+  the standard resolution sprites, which appear small at higher resolutions.
+- This suggests the team planned for multiple resolution support but ran out of time to
+  create appropriately scaled art assets.
+
 ## Impact on OpenApoc
 
 These cut features represent potential expansion opportunities for OpenApoc:
@@ -152,6 +297,11 @@ These cut features represent potential expansion opportunities for OpenApoc:
 - **Expanded Alien Dimensions**: Random generation would increase replayability.
 - **Multiplayer**: Complex to implement but would significantly expand the game's appeal.
 - **Additional Skills**: Relatively straightforward to add and would deepen gameplay.
+- **Procedural Alien Dimension**: A community-favorite cut feature that aligns with OpenApoc's
+  goal of extending the original game.
+- **Tracker Gun**: Could integrate with the existing cityscape intelligence mechanics.
+- **Wall/Ceiling Crawling**: Would significantly increase alien threat level and tactical
+  depth.
 
 Any implementation of cut features should be carefully designed to integrate with the
 existing game systems and maintain balance.

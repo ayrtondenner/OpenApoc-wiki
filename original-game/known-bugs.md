@@ -175,6 +175,109 @@ The agent inventory screen can become locked or unresponsive under certain condi
 - The lock can sometimes be resolved by pressing Escape or clicking outside the inventory
   window; in severe cases, the game may need to be reloaded from a save.
 
+## Community-Discovered Bugs
+
+The following bugs were identified through OpenApoc Discord community research, reverse
+engineering, and extensive playtesting.
+
+### GOG Mismatched Executables
+
+**Severity**: Critical
+**Area**: Distribution / Compatibility
+
+The GOG distribution of X-COM: Apocalypse ships with mismatched executables:
+
+- **UFOEXE** (cityscape executable) is actually the renamed **486 version**.
+- **TACEXE** (tactical executable) is the **Pentium 1 version**.
+
+This mismatch leads to crashes to desktop (CTDs) during gameplay, particularly when
+transitioning between the cityscape and tactical layers. Community report:
+https://www.gog.com/forum/xcom_series/xcom_apocalypse_serious_distribution_bug_please_fix_gog
+
+### Learning AI Save/Load Bug (Extended Details)
+
+**Severity**: Critical
+**Area**: Strategic AI
+
+In addition to the previously documented save/load behavior, community research has confirmed
+that this bug is **not present in beta/debug versions** of the original executable. This
+suggests the bug was introduced during final release preparation, possibly as an unintended
+side effect of removing debug instrumentation.
+
+### Midnight / City Repair Freeze
+
+**Severity**: High
+**Area**: Strategic Layer / City Simulation
+
+The game can **freeze after midnight** during the city repair/update cycle. According to
+community testing, the workaround is to **damage a building** before midnight passes, which
+forces the repair logic into a code path that avoids the freeze condition.
+
+### Agent Firing Bug (Over 20 Agents)
+
+**Severity**: Moderate
+**Area**: Personnel Management
+
+When X-COM employs **more than 20 agents**, firing (sacking) one agent can cause a
+**different agent to be fired instead**, potentially from a completely different role
+(e.g., firing a soldier removes a scientist). This is related to but distinct from the
+previously documented Employee Sacking Bug, and specifically triggers with large rosters.
+
+### Building Replacement Bug
+
+**Severity**: Moderate
+**Area**: Base Management
+
+**Transferring engineers** between bases can trigger a bug where a base **facility is
+incorrectly replaced** by a different facility type. The exact trigger conditions involve
+the engineer transfer coinciding with facility construction or demolition operations.
+
+### Mind Shield Permanent Stat Boost Exploit
+
+**Severity**: Minor (exploitable)
+**Area**: Equipment / Stats
+
+Holding a **Mind Shield through mission end** grants a **permanent psi-defense boost** to the
+agent's base stats. This is cumulative across multiple missions. See
+[psionics.md](psionics.md) for details.
+
+### 1-Turn Final Mission Exploit (TB Mode)
+
+**Severity**: Minor (exploitable)
+**Area**: Turn-Based Combat / Campaign
+
+In turn-based mode, the **final mission can be completed in a single turn** by exploiting
+specific movement and action sequences. This bypasses most of the intended challenge of the
+final alien dimension assault.
+
+### Workshop Infinite Money Exploit
+
+**Severity**: Minor (exploitable)
+**Area**: Manufacturing / Economy
+
+According to community testing, certain manufacturing workflows can be manipulated to
+generate **unlimited money** through workshop production. The exact mechanism involves
+exploiting price calculations or production queue manipulation.
+
+### Stun Raid Economy Exploit
+
+**Severity**: Minor (exploitable)
+**Area**: Tactical Combat / Diplomacy
+
+In the original game, conducting **stun raids** (raiding buildings using only stun weapons
+to incapacitate rather than kill) incurs **no relationship penalty** with the targeted
+organization. This allows the player to repeatedly raid organizations for equipment and
+funds without diplomatic consequences, which is clearly unintended behavior.
+
+### Scientists/Engineers in Base Defense
+
+**Severity**: Moderate
+**Area**: Base Defense / Personnel
+
+When a base has **too many scientists or engineers present**, they may **appear in base
+defense missions instead of combat agents**. Scientists and engineers have no combat training
+and minimal equipment, making them ineffective defenders and easy casualties.
+
 ## OpenApoc Relevance
 
 These bugs are documented for OpenApoc developers to make informed decisions about:
