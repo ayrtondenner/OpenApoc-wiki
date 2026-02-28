@@ -48,6 +48,7 @@ Developer-focused documentation for contributing to OpenApoc.
 - [Architecture](development/architecture.md) — High-level codebase architecture
 - [Building](development/building.md) — Build instructions for all platforms
 - [Data Formats](development/data-formats.md) — XML data format reference
+- [Forms UI](development/forms-ui.md) — Forms UI library and XML control reference
 - [Coding Style](development/coding-style.md) — Code style guide and conventions
 
 ### Research (`research/`)

@@ -51,11 +51,13 @@ The engine core that provides platform abstraction and essential services.
 
 ### forms/
 
-The UI widget system providing all interface controls.
+The UI widget system providing all interface controls. Forms are defined in XML files (`data/forms/`) and loaded at runtime via pugixml.
 
-- Controls, labels, text edits, listboxes, scrollbars, buttons, checkboxes, sliders, graphic elements.
-- XML-based form definitions loaded from the `data/` directory.
-- Widget hierarchy with parent-child relationships and layout management.
+- 14 control types: Form, Label, TextButton, GraphicButton, Graphic, CheckBox, RadioButton, TriStateBox, ScrollBar, ListBox, MultilistBox, TextEdit, Ticker, plus the base Control class.
+- Hierarchical parent-child control tree with event callbacks.
+- XML-based layout with support for centering, percentage sizing, and palette-based rendering.
+
+See [Forms UI](forms-ui.md) for the complete reference.
 
 ### game/state/
 
