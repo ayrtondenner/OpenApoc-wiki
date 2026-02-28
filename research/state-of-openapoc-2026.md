@@ -10,7 +10,7 @@ OpenApoc is an open-source C++17 reimplementation of X-COM: Apocalypse (1997), l
 - **Stars**: ~564
 - **License**: GPL-3.0
 - **Lead Developer**: JonnyH (engine, rendering, backend)
-- **Key Contributors**: filmboy84 (testing, modding, OG knowledge), skin36 (reverse engineering), Kurtsley (bug fixes, relations system)
+- **Key Contributors**: filmboy84 (testing, modding, OG knowledge), skin36 (reverse engineering), Kurtsley (bug fixes, relations system), Ayrton Denner (features, bug fixes, documentation, QA)
 
 ## Current State: Alpha
 

@@ -20,6 +20,7 @@
 | Zigmar | Zigmar | Programmer | Save game debugging, container safety |
 | Flacko | Flacko | Programmer | Cheat menu, AppVeyor, vehicle fixes |
 | Thaddaeus Frogley | (external) | Original Apocalypse Developer | Collapsing terrain, procedural dimensions, org allegiance |
+| Ayrton Denner | ayrtondenner | Programmer/Documentation/QA | Bug fixes, new features, wiki creation, Discord mining, QA testing, documentation overhaul |
 
 ## Critical Findings
 
