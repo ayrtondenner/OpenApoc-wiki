@@ -17,6 +17,7 @@ Code formatting is enforced by **clang-format-18** and static analysis by **clan
 - **Column limit**: 100 characters (tab width = 4).
 - **Braces**: Allman style -- opening brace on its own line.
 - **Always use braces**, even for single-statement `if`/`for`/`while` blocks.
+- **Exception**: Trivial functions (a single statement fitting within 100 columns) may stay on one line: `int getX() const { return x; }`. This is enforced by clang-format (`AllowShortFunctionsOnASingleLine: All`).
 - **Namespace content is not indented**. Closing brace gets a `// namespace Name` comment.
 - **Pointers and references**: Align right (`int *ptr`, `Type &ref`).
 - **Line breaks**: Break before operators when wrapping; indent continuation by one extra tab.
@@ -46,6 +47,8 @@ public:
 | `camelBack` | Methods, member variables, function parameters, local variables |
 | `SHOUTY_CAPS` | Constants, macros |
 | `lower_case` | Labels |
+
+Short variable names (`i`, `x`, `y`) are fine when the meaning is obvious from context.
 
 ## Class Conventions
 
@@ -83,6 +86,8 @@ mkup<T>(args...)    // std::make_unique<T>(args...)
 
 Prefer `up<>` (exclusive ownership) over `sp<>` unless shared ownership is genuinely needed. Use `std::move()` to transfer `up<>` ownership. No naked `new` -- always wrap in smart pointers immediately.
 
+**Ownership guideline**: If ownership is tied to the class, use a direct member (no pointer). If a reference owned by another object is guaranteed to outlive the class, use a `&reference` member. Otherwise use `up<>` or `sp<>` depending on whether ownership is exclusive or shared.
+
 ### Logging (framework/logger.h)
 
 Uses **fmt-style format strings** with positional `{0}`, `{1}`, etc. placeholders (not printf-style):
@@ -119,6 +124,7 @@ UString translated = tr("English text to translate");
 - **Include order**: Local headers first, then system headers. Each block alphabetically sorted.
 - **Local headers use paths relative to the OpenApoc root**: `"framework/logger.h"`, not `"../logger.h"`.
 - **Prefer forward declarations** over `#include` in headers where possible.
+  - Forward declarations are **not possible** for templates, non-class types (e.g., `enum class`), and superclasses. When in doubt, try building without the include and see what fails.
 
 ```cpp
 #pragma once
@@ -150,11 +156,15 @@ public:
 - **`const` aggressively**: const member functions, const parameters, const return types, const local variables.
 - **Early return** is encouraged -- prefer separate `if (cond) return;` checks over deeply nested conditionals.
 - **Range-for loops**: `for (auto &element : container)` or `for (const auto &element : container)`.
+  - **Exception**: When removing elements during iteration, use an iterator-based loop instead of range-for.
 - **No C-style casts** -- use `static_cast<>`, `dynamic_cast<>`, `reinterpret_cast<>`.
 - **Prefer `{}` brace initialization**.
+- **Prefer `std::numeric_limits<>`** over C-style `MAX_INT` / `INT_MAX` macros.
 - **Prefer `emplace()` over `insert()`** in STL containers.
 - **Use `enum class`** over plain `enum`.
 - **Use anonymous namespaces** instead of `static` for file-local functions and classes.
+- **Use `static_assert()`** to verify assumptions about alignment, packing (e.g., when reading structs from original game files), or template restrictions.
+- **Avoid Yoda conditionals** -- write `var == 1`, not `1 == var`.
 
 ```cpp
 namespace
@@ -165,6 +175,13 @@ void helperFunction()
 }
 } // anonymous namespace
 ```
+
+## Comments
+
+- Prefer `//` for single-line comments.
+- Multi-line `/* */` comments: align the `*` on each intermediate line.
+- Use `//TODO:` and `//FIXME:` markers to flag work-in-progress or known issues.
+- Do not comment for the sake of it -- if the code can be made clearer, prefer that over adding a comment.
 
 ## All Project Code Lives in namespace OpenApoc
 
