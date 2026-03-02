@@ -100,7 +100,7 @@ Tested on Ubuntu 22.04 and 24.04.
 1. **Install dependencies**:
 
 ```sh
-sudo apt-get install libsdl2-dev cmake build-essential git libunwind8-dev libboost-locale-dev libboost-program-options-dev qtbase5-dev libvorbis-dev
+sudo apt-get install libsdl2-dev cmake build-essential git libunwind8-dev libboost-locale-dev libboost-program-options-dev qt6-base-dev libvorbis-dev
 ```
 
 2. **Clone and initialize submodules**:
