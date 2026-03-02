@@ -246,6 +246,7 @@ Scripts have access to a global `OpenApoc` table that provides:
 |---|---|
 | `FW.LogInfo(message)` | Log an informational message |
 | `FW.LogWarning(message)` | Log a warning |
+| `FW.LogError(message)` | Log an error |
 
 **`OpenApoc.Framework.Config`** (commonly aliased as `CFG`) -- Configuration access:
 
@@ -253,6 +254,9 @@ Scripts have access to a global `OpenApoc` table that provides:
 |---|---|
 | `CFG.getBool('Section.Key')` | Read a boolean config value |
 | `CFG.getInt('Section.Key')` | Read an integer config value |
+| `CFG.getString('Section.Key')` | Read a string config value |
+| `CFG.getFloat('Section.Key')` | Read a float config value |
+| `CFG.describe('Section', 'Key')` | Get the description of a config option |
 
 **`OpenApoc.enum`** -- Game enumerations, e.g.:
 - `OpenApoc.enum.VehicleType.Type.ATV`
@@ -309,6 +313,90 @@ FW.LogInfo("Finished loading difficulty patch")
 ```
 
 This script uses the current difficulty level to load a difficulty-specific game state patch from a submod directory, allowing different difficulty settings to override game data (such as organisation relationships, city layouts, and alien forces).
+
+### RNG Methods
+
+The random number generator (`GS.rng`) exposes the following methods for use in Lua scripts:
+
+| Method | Description |
+|---|---|
+| `GS.rng:randBoundsInclusive(min, max)` | Returns a random integer in the range [min, max] (both endpoints included). |
+| `GS.rng:randBoundsExclusive(min, max)` | Returns a random integer in the range [min, max) (max excluded). |
+| `GS.rng:seed(value)` | Seeds the random number generator with the given value. |
+
+Example usage from the base scripts:
+
+```lua
+-- Pick a random element from a Lua table
+function pickRandom(t)
+    return t[GS.rng:randBoundsInclusive(1, #t)]
+end
+
+-- Seed the RNG on new game start
+GS.rng:seed(os.time())
+```
+
+### GameTime Methods
+
+The game time object (`GS.gameTime`) exposes the following read-only methods:
+
+| Method | Returns |
+|---|---|
+| `GS.gameTime:getHours()` | Current hour of the day |
+| `GS.gameTime:getMinutes()` | Current minute of the hour |
+| `GS.gameTime:getDay()` | Current day number |
+| `GS.gameTime:getWeek()` | Current week number |
+
+### GameState and Object Methods
+
+Beyond data access, several game objects expose methods that can be called from Lua scripts:
+
+| Method | Description |
+|---|---|
+| `GS:appendGameState(path)` | Load and merge additional game state XML from the given path into the current GameState. Used by the base mod to apply difficulty patches. |
+| `GS:loadGame(path)` | Load a saved game from the given path. |
+| `city:placeVehicle(vehicleType, owner)` | Place a new vehicle of the given type in the city, owned by the specified organisation. |
+| `city:placeVehicleInBuilding(vehicleType, owner, building)` | Place a new vehicle at a specific building. |
+| `city:placeVehicleAtPosition(vehicleType, owner, position, facing)` | Place a new vehicle at specific XYZ coordinates with an optional facing angle. |
+| `agent_generator:createAgent(orgRef, agentTypeRef)` | Create a new agent of the given type, hired by the specified organisation. Returns a StateRef to the new agent. |
+| `agent:enterBuilding(buildingRef)` | Move an agent into the specified building. |
+
+### The StateRef Pattern
+
+When accessing game objects from Lua, it is important to understand the **StateRef** pattern. OpenApoc objects exposed to Lua are **not** standard Lua tables -- they are C++ objects with a custom interface. This has several implications:
+
+**Iterating collections:** Use `pairs()` to iterate game state collections. The loop yields `(id_string, object)` pairs:
+
+```lua
+for vt_id, vt_object in pairs(GS.vehicle_types) do
+    -- vt_id is the string key (e.g. 'VEHICLETYPE_PHOENIX_HOVERCAR')
+    -- vt_object is the vehicle type object
+    vt_object.type = OA.enum.VehicleType.Type.ATV
+end
+```
+
+**Passing references to C++ functions:** StateRefs must be passed as **strings** (the object's ID), not as object references:
+
+```lua
+-- Correct: pass the string ID
+agent.object:enterBuilding(building.id)
+agent.object.homeBuilding = building.id
+
+-- NOT: agent.object:enterBuilding(building.object)
+```
+
+**Debugging:** The standard `table.dump()` function will not work on OpenApoc objects since they are not actual Lua tables. Use `FW.LogInfo()` to print individual fields instead.
+
+### Utility Functions
+
+The base script (`openapoc_base.lua`) provides several utility functions that are available to all mod scripts, since it loads first:
+
+| Function | Description |
+|---|---|
+| `pickRandom(table)` | Returns a random element from a Lua table, using the game's RNG for deterministic replay. |
+| `math.clamp(v, min, max)` | Clamps a value between min and max. |
+| `math.round(v)` | Rounds a number to the nearest integer. |
+| `table.dump(t, nesting)` | Debug function that prints a table's contents. Note: does **not** work on OpenApoc objects. |
 
 ---
 
@@ -561,27 +649,46 @@ The following issues are frequently encountered by new modders (source: Discord 
 - **Case sensitivity in file paths**: Some platforms (especially Linux) are case-sensitive in file path resolution. Ensure your file references match the actual case exactly.
 - **`op='delete'` deletes the WHOLE list**: The XML `op='delete'` attribute removes the entire list element, not just a single entry. There is currently no mechanism to delete individual entries from a list -- you can only replace the entire list.
 - **Duplicate objects from serialization**: When creating new objects via mods, ensure unique keys. Duplicate keys can cause the serialization system to create duplicate entries with unpredictable behavior.
+- **New game required**: Always start a **new game** when changing mod XML data. Saves embed the game state at save time, so loading an old save will not pick up your XML changes.
+- **Mod requires/conflicts not enforced**: The `<requires>` and `<conflicts>` fields in `modinfo.xml` are defined in the format but not yet enforced by the engine. Version checking (`<minversion>`) is also informational only.
 
 ### Damage Type Limitations
 
 Damage types are currently **hardcoded** in the engine. There is no modding capability for defining custom damage types. The available damage types are those defined in `damage_types.xml`, but their underlying behavior (penetration logic, resistance calculations, special effects like fire or stun) is implemented in C++ code.
 
-### Extended Weapons Mod (EWM)
+### Additional Known Limitations
 
-The **Extended Weapons Mod** by filmboy84 is currently the primary test platform for OpenApoc's modding system. It serves as both a playable content mod and a stress test for mod capabilities. Features include:
+- **Physics and radii**: Vehicle and projectile physics radii values are not moddable through XML or Lua.
+- **Organisation long-term relationships**: Only short-term relationship values are exposed in the game state. Long-term relationship tracking is not currently available for modding.
 
-- Weapons ported from UFO: Enemy Unknown and Terror from the Deep.
-- New alien types and variants.
-- Over 2,000 additional agent names.
-- Various balance adjustments and fixes.
+---
 
-The EWM is a useful reference for modders looking for real-world examples of what the mod system can accomplish and where its current limitations lie.
+## Map Modding Tools
+
+While OpenApoc does not yet include a built-in map editor, several community tools exist for creating and editing maps:
+
+- **XME (Xenonaut Map Editor)** -- The primary tool for editing cityscape and alien dimension maps. Latest version: 095b1 (beta 1.0).
+- **TacEdit** -- A tool for validating that tactical maps are correctly structured and will load properly.
+- **A-Patcher** -- A hex-patching tool that can enable the hidden built-in map editor in the original X-COM: Apocalypse executable. Useful for creating maps compatible with OpenApoc's map format.
+
+---
+
+## Community Mods
+
+The following mods serve as references for what OpenApoc's modding system can accomplish:
+
+- **[Extended Weapons Mod (EWM)](https://github.com/OpenApoc/extended_weapons_mod)** by filmboy84 -- The primary test platform for OpenApoc's modding system. Includes weapons ported from UFO: Enemy Unknown and Terror from the Deep, new alien types, over 2,000 additional agent names, and various balance adjustments.
+- **[OpenApoc Balance Mod](https://github.com/Jarskih/openapoc-balance-mod)** by Jarskih -- Difficulty and balance adjustments.
+
+These mods are useful references for modders looking for real-world examples of mod structure, XML patching, and Lua scripting.
 
 ---
 
 Sources:
 - [`framework/modinfo.h`](https://github.com/OpenApoc/OpenApoc/blob/master/framework/modinfo.h)
 - [`framework/luaframework.h`](https://github.com/OpenApoc/OpenApoc/blob/master/framework/luaframework.h)
+- [`framework/luaframework.cpp`](https://github.com/OpenApoc/OpenApoc/blob/master/framework/luaframework.cpp)
+- [`game/state/luagamestate_support.cpp`](https://github.com/OpenApoc/OpenApoc/blob/master/game/state/luagamestate_support.cpp)
 - [`data/scripts/openapoc_base.lua`](https://github.com/OpenApoc/OpenApoc/blob/master/data/scripts/openapoc_base.lua)
 - [`data/mods/base/modinfo.xml`](https://github.com/OpenApoc/OpenApoc/blob/master/data/mods/base/modinfo.xml)
 - [`framework/options.cpp`](https://github.com/OpenApoc/OpenApoc/blob/master/framework/options.cpp)

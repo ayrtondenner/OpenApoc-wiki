@@ -22,12 +22,15 @@ These hotkeys are available when debug mode is active (F1 toggled on) in the Cit
 |---|---|
 | Ctrl + Alt + Shift + Left Click | Destroy scenery tile at cursor |
 | Ctrl + Alt + Shift + Right Click | Collapse building at cursor |
-| A | Give every weapon and ammo to current base |
+| A | Give every vehicle weapon and ammo to current base |
 | W | Warp to alien dimension and back |
-| R | Repair all scenery in the city |
+| R | Repair all scenery in the city (instant, ignores repair rules) |
+| Shift + R | Repair scenery using game repair logic (charges building owners, checks support) without requiring construction vehicles; single repair pass |
 | B | Spawn UFO on base assault mission |
 | U | Spawn three crashed UFOs |
 | X | Crash every vehicle on map |
+| - (Minus) | Destroy all currently selected vehicles (both owned and other) |
+| P | Regenerate dimension gate portals in current city |
 | PgUp / PgDown | Display only one map layer (other layers become transparent) |
 
 ### Diagnostic Overlays
@@ -45,6 +48,7 @@ These hotkeys are available when debug mode is active (F1 toggled on) in the Cit
 | F10 | Highlight tubes in city |
 | F11 | Highlight roads in city |
 | F12 | Highlight hills in city |
+| T | Show vehicle target lines (green = X-COM targeting, red = other targeting, yellow = mutual targeting) |
 
 ### Numpad Filters
 
@@ -106,6 +110,7 @@ The **S** key stuns units and the **K** key removes units from the map (units co
 | Key | Action |
 |---|---|
 | F | Re-link support lines for battlescape map parts |
+| Q | Reset AI movement order for unit at selected tile (forces prone stance change) |
 | Numpad 0 | Spawn vortex mine explosion at cursor |
 | Numpad 1-9 | Spawn a high-damage shot at cursor in specified direction (5 = downward) |
 
@@ -151,8 +156,11 @@ The cheat menu also provides quick-action buttons:
 - **Make All Organizations Friendly / Hostile** -- Set all organisation relationships to maximum positive or negative
 - **Make All Organizations Utopia / Chaos** -- Push all organisation relations to extremes
 - **Modify Funds** -- Add or set player funds
-- **Set Time Before Midnight** -- Advance the game clock to just before midnight
-- **Fast Forward to End of Day / Week / Month** -- Skip time to the end of the current period
+- **Go to End of Day** -- Advance clock to 23:59:59 of current day
+- **Go Forward 1 Day** -- Skip exactly 1 day forward
+- **Go Forward 1 Week** -- Skip exactly 7 days forward
+- **Go to End of Week** -- Advance to last day of current week at 23:59:59
+- **Go to End of Month** -- Advance to last day of current month at 23:59:59
 
 ---
 
